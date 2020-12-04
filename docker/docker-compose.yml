@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  database:
+    image: postgres:9.6
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=dsi_dev_profiles
+      - POSTGRES_USER=DSi
+      - POSTGRES_PASSWORD=S3cr3T
+  app:
+    image: dsi-dev-profiles-backend:master
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        JAR_FILE: target/*.jar
+        APP_PROP_LOC: src/main/resources/application.properties
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      WAIT_HOSTS: database:5433
+volumes:
+  pgdata:
