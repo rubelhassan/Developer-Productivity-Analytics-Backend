@@ -1,0 +1,3 @@
+databaseChangeLog:
+  - include:
+      - file: changes/filename.sql
