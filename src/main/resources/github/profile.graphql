@@ -1,0 +1,35 @@
+query ($fromDate: DateTime!, $toDate: DateTime!) {
+  viewer {
+    email
+    name
+    followers {
+      totalCount
+    }
+    contributionsCollection(from: $fromDate, to: $toDate) {
+      hasAnyContributions
+      totalCommitContributions
+      totalRepositoryContributions
+      restrictedContributionsCount
+      commitContributionsByRepository {
+        contributions(last: 10) {
+          nodes {
+            commitCount
+            repository {
+              name
+            }
+          }
+        }
+      }
+      contributionCalendar {
+        totalContributions
+        weeks {
+          contributionDays {
+            weekday
+            contributionCount
+            date
+          }
+        }
+      }
+    }
+  }
+}
