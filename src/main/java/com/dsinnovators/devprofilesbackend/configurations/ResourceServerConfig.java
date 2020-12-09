@@ -32,7 +32,8 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests(authorizer -> authorizer
-                .antMatchers("/error").permitAll()
+                // TODO: OpenAPI 3.0/Swagger endpoints are exposed only for development
+                .antMatchers("/error", "/v3/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
             )
             .httpBasic()
