@@ -1,4 +1,4 @@
-package com.dsinnovators.devprofilesbackend.configurations;
+package com.dsinnovators.devprofilesbackend.configurations.token;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;

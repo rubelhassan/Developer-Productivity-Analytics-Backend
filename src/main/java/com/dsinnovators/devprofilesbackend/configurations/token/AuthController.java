@@ -1,6 +1,6 @@
-package com.dsinnovators.devprofilesbackend.controllers;
+package com.dsinnovators.devprofilesbackend.configurations.token;
 
-import com.dsinnovators.devprofilesbackend.configurations.JwtHelper;
+import com.dsinnovators.devprofilesbackend.configurations.token.JwtHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
