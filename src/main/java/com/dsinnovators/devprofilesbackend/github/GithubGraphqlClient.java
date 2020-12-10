@@ -1,12 +1,12 @@
 package com.dsinnovators.devprofilesbackend.github;
 
+import com.dsinnovators.devprofilesbackend.configurations.AppProperties;
 import com.dsinnovators.devprofilesbackend.github.entities.GithubResponseData;
 import com.dsinnovators.devprofilesbackend.github.querymodels.DateRange;
 import com.dsinnovators.devprofilesbackend.github.querymodels.GraphqlQuery;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,24 +23,15 @@ import java.util.Map;
 public class GithubGraphqlClient {
     private static final String graphApiUrl = "https://api.github.com/graphql";
 
-    @Value("${github_client_id}")
-    private String clientId;
-
-    @Value("${github_client_secret}")
-    private String clientSecret;
-
-    @Value(
-        "#{T(com.dsinnovators.devprofilesbackend.util.ResourceReader).readAsString('classpath:github/profile.graphql')}"
-    )
-    private String profile;
-
     private final RestTemplate restTemplate;
+
+    private final AppProperties appProperties;
 
     public GithubResponseData fetchUserProfileWithContributions(String token) throws JsonProcessingException {
         Map<String, String> params = clientParams();
         ObjectMapper mapper = new ObjectMapper();
         GraphqlQuery query = GraphqlQuery.builder()
-                .query(profile)
+                .query(appProperties.getGithub_gpl_profile_query())
                 .variables(dateRangeOfThisWeekToJsonString())
                 .build();
         HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(query), attachHeaders(token));
@@ -62,8 +53,8 @@ public class GithubGraphqlClient {
 
     private Map<String, String> clientParams() {
         Map<String, String> params = new HashMap<>();
-        params.put("client_id", clientId);
-        params.put("client_secret", clientSecret);
+        params.put("client_id", appProperties.getClientId());
+        params.put("client_secret", appProperties.getClientSecret());
         return params;
     }
 

@@ -1,6 +1,6 @@
 package com.dsinnovators.devprofilesbackend.configurations;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,13 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @EnableWebSecurity
+@AllArgsConstructor
 public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
-
-    @Value("${dsi-client-id}")
-    private String clientId;
-
-    @Value("${dsi-client-secret}")
-    private String clientSecret;
+    private final AppProperties appProperties;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -50,10 +46,10 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
     @Bean
     protected UserDetailsService userDetailsService() {
         UserDetails client = User
-                .withUsername(clientId)
+                .withUsername(appProperties.getDsiClientId())
                 .authorities("USER")
                 .passwordEncoder(passwordEncoder()::encode)
-                .password(clientSecret)
+                .password(appProperties.getDsiClientSecret())
                 .build();
         return new InMemoryUserDetailsManager(client);
     }
