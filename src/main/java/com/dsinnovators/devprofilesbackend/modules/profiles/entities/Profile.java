@@ -8,7 +8,6 @@ import org.springframework.hateoas.server.core.Relation;
 
 import javax.persistence.*;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,11 +21,8 @@ public class Profile {
     @SequenceGenerator(name="profiles_id_generator", sequenceName = "profiles_id_seq", initialValue=101)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="developer_id", nullable = false)
-    private Developer developer;
-
     private String authToken;
+    private String userName;
     private String email;
     private Integer commitContributions;
     private Integer repositoryContributions;
@@ -43,6 +39,10 @@ public class Profile {
 
     @Enumerated(EnumType.STRING)
     private GitPlatform gitPlatform;
+
+    @ManyToOne
+    @JoinColumn(name="developer_id", nullable = false)
+    private Developer developer;
 
     public static enum GitPlatform{
         GITHUB, BITBUCKET, GITLAB

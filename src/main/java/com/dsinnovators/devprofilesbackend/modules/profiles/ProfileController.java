@@ -20,7 +20,8 @@ public class ProfileController {
 
     @GetMapping("/{id}")
     ResponseEntity<ProfileResource> getUserProfile(@PathVariable("id") Long id) throws JsonProcessingException {
-        // TODO: retrieve from db
+        // TODO: add service layer and retrieve from db
+        String token = "Insert you token here";
         return ok(new ProfileResource(githubGraphqlClient.fetchUserProfileWithContributions(token), id));
     }
 }

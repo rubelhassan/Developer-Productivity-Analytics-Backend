@@ -1,7 +1,23 @@
 query ($fromDate: DateTime!, $toDate: DateTime!) {
-    viewer {
-        email
+    user: viewer {
         name
+        login
+        email
+        bio
+        avatarUrl
+        websiteUrl
+        company
+        location
+        createdAt
+        organizationConnections: organizations(first: 100) {
+             organizations: nodes {
+                name
+                email
+                description
+                url
+                websiteUrl
+            }
+        }
         followers {
             totalCount
         }
@@ -11,21 +27,129 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
         starredRepositories {
             totalCount
         }
-        repositories {
+        repositoriesContributedTo {
             totalCount
         }
-        topRepositories (first: 3, orderBy: {field: STARGAZERS, direction: DESC}) {
-            nodes {
+        gists {
+            totalCount
+        }
+        issues {
+            totalCount
+        }
+        pinnedItems(first: 6, types: [REPOSITORY]) {
+            repositories: nodes {
+                ... on Repository {
+                    name
+                    description
+                    stargazerCount
+                    nameWithOwner
+                    isPrivate
+                    forkCount
+                    isFork
+                    owner {
+                        login
+                    }
+                    primaryLanguage {
+                        name
+                    }
+                    repositoryTopics(first: 1) {
+                        nodes {
+                            topic {
+                                name
+                            }
+                        }
+                    }
+                    pullRequests {
+                        totalCount
+                    }
+                    issues {
+                        totalCount
+                    }
+                    watchers {
+                        totalCount
+                    }
+                }
+            }
+            totalCount
+        }
+        topRepositories(first: 5, orderBy: {field: STARGAZERS, direction: DESC}) {
+            repositories: nodes {
                 name
+                description
+                nameWithOwner
+                stargazerCount
+                isPrivate
                 forkCount
+                isFork
+                owner {
+                    login
+                }
+                primaryLanguage {
+                    name
+                }
+                repositoryTopics(first: 1) {
+                    nodes {
+                        topic {
+                            name
+                        }
+                    }
+                }
+                pullRequests {
+                    totalCount
+                }
+                issues {
+                    totalCount
+                }
+                watchers {
+                    totalCount
+                }
             }
         }
-        all_contributions: contributionsCollection {
+        repositories (first: 100, orderBy: {field: CREATED_AT, direction: DESC}) {
+            repositories: nodes {
+                name
+                description
+                isPrivate
+                stargazerCount
+                isUserConfigurationRepository
+                forkCount
+                isFork
+                owner {
+                    login
+                }
+                primaryLanguage {
+                    name
+                }
+                repositoryTopics(first: 1) {
+                    nodes {
+                        topic {
+                            name
+                        }
+                    }
+                }
+                pullRequests {
+                    totalCount
+                }
+                issues {
+                    totalCount
+                }
+                watchers {
+                    totalCount
+                }
+            }
+            totalRepositories: totalCount
+            pageInfo{
+                startCursor
+                endCursor
+                hasNextPage
+            }
+        }
+        allContributions: contributionsCollection {
             totalCommitContributions
             totalRepositoryContributions
             totalRepositoriesWithContributedIssues
         }
-        weekly_contributions: contributionsCollection(from: $fromDate, to: $toDate) {
+        weeklyContributions: contributionsCollection(from: $fromDate, to: $toDate) {
             hasAnyContributions
             totalCommitContributions
             totalRepositoryContributions
@@ -51,5 +175,11 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
                 }
             }
         }
+    }
+    rateLimit {
+        limit
+        cost
+        remaining
+        resetAt
     }
 }

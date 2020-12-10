@@ -1,5 +1,6 @@
 package com.dsinnovators.devprofilesbackend.github;
 
+import com.dsinnovators.devprofilesbackend.github.entities.GithubResponseData;
 import com.dsinnovators.devprofilesbackend.github.querymodels.DateRange;
 import com.dsinnovators.devprofilesbackend.github.querymodels.GraphqlQuery;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,7 +36,7 @@ public class GithubGraphqlClient {
 
     private final RestTemplate restTemplate;
 
-    public String fetchUserProfileWithContributions(String token) throws JsonProcessingException {
+    public GithubResponseData fetchUserProfileWithContributions(String token) throws JsonProcessingException {
         Map<String, String> params = clientParams();
         ObjectMapper mapper = new ObjectMapper();
         GraphqlQuery query = GraphqlQuery.builder()
@@ -43,7 +44,11 @@ public class GithubGraphqlClient {
                 .variables(dateRangeOfThisWeekToJsonString())
                 .build();
         HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(query), attachHeaders(token));
-        return this.restTemplate.exchange(graphApiUrl, HttpMethod.POST, request, String.class, params).getBody();
+        return new ObjectMapper().readValue(
+                this.restTemplate
+                    .exchange(graphApiUrl, HttpMethod.POST, request, String.class, params)
+                    .getBody(),
+                GithubResponseData.class);
     }
 
     private String dateRangeOfThisWeekToJsonString() throws JsonProcessingException {
