@@ -1,7 +1,5 @@
 package com.dsinnovators.devprofilesbackend.modules.profiles;
 
-import com.dsinnovators.devprofilesbackend.github.GithubGraphqlClient;
-import com.dsinnovators.devprofilesbackend.modules.profiles.resources.ProfileResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +14,10 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping(value="profiles", produces = "application/json")
 @AllArgsConstructor
 public class ProfileController {
-    private GithubGraphqlClient githubGraphqlClient;
+    private ProfileService profileService;
 
     @GetMapping("/{id}")
     ResponseEntity<ProfileResource> getUserProfile(@PathVariable("id") Long id) throws JsonProcessingException {
-        // TODO: add service layer and retrieve from db
-        String token = "Insert you token here";
-        return ok(new ProfileResource(githubGraphqlClient.fetchUserProfileWithContributions(token), id));
+        return ok(new ProfileResource(profileService.getProfile(id)));
     }
 }
