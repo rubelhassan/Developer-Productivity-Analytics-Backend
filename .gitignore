@@ -32,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Custom Configuration Files ###
+src/main/resources/application-dev.properties
