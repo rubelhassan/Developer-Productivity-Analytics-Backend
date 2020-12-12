@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Repository {
+public class GithubRepository {
     private String name;
     private String description;
     private Integer stargazerCount;

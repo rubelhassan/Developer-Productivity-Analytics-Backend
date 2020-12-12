@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public class Organization {
+public class GithubOrganization {
     private String name;
     private String email;
     private String description;

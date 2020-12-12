@@ -12,5 +12,5 @@ import java.util.List;
 @Builder
 @ToString
 public class OrganizationConnection {
-    private List<Organization> organizations = new ArrayList<>();
+    private List<GithubOrganization> organizations = new ArrayList<>();
 }
