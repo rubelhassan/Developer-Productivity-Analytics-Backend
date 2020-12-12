@@ -2,6 +2,7 @@ package com.dsinnovators.devprofilesbackend.modules.profiles.entities;
 
 import com.dsinnovators.devprofilesbackend.github.entities.GithubRepository;
 import com.dsinnovators.devprofilesbackend.github.entities.Language;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.server.core.Relation;
 
 import javax.persistence.*;
-import java.util.Optional;
+import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
 
@@ -28,6 +29,7 @@ public class Repository {
     @SequenceGenerator(name="repositories_id_generator", sequenceName = "repositories_id_seq", initialValue=101)
     private Long id;
 
+    private String repositoryId;
     private String name;
     private String description;
     private Integer stargazerCount;
@@ -44,9 +46,24 @@ public class Repository {
     private boolean isPinned;
     private boolean isTop;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="profile_id", nullable = true) // TODO: make nullable false
+    @JoinColumn(name="profile_id", nullable = false)
     private Profile profile;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Repository)) return false;
+        Repository that = (Repository) o;
+        return getId().equals(that.getId()) && getRepositoryId().equals(that.getRepositoryId()) &&
+                getName().equals(that.getName()) && Objects.equals(getOwner(), that.getOwner());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getRepositoryId(), getName(), getOwner());
+    }
 
     public static Repository from(GithubRepository githubRepository) {
         String topic = null;
@@ -55,6 +72,7 @@ public class Repository {
         }
 
         return Repository.builder()
+                .repositoryId(githubRepository.getRepositoryId())
                 .name(githubRepository.getName())
                 .description(githubRepository.getDescription())
                 .stargazerCount(githubRepository.getStargazerCount())
@@ -71,5 +89,28 @@ public class Repository {
                 .isPinned(false)
                 .isTop(false)
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "Repository{" +
+                "id=" + id +
+                ", repositoryId='" + repositoryId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", stargazerCount=" + stargazerCount +
+                ", nameWithOwner='" + nameWithOwner + '\'' +
+                ", isPrivate=" + isPrivate +
+                ", isFork=" + isFork +
+                ", forkCount=" + forkCount +
+                ", owner='" + owner + '\'' +
+                ", primaryLanguage='" + primaryLanguage + '\'' +
+                ", topic='" + topic + '\'' +
+                ", pullRequests=" + pullRequests +
+                ", issues=" + issues +
+                ", watchers=" + watchers +
+                ", isPinned=" + isPinned +
+                ", isTop=" + isTop +
+                '}';
     }
 }

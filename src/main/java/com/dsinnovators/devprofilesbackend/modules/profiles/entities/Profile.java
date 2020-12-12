@@ -3,6 +3,7 @@ package com.dsinnovators.devprofilesbackend.modules.profiles.entities;
 import com.dsinnovators.devprofilesbackend.github.entities.GithubRepository;
 import com.dsinnovators.devprofilesbackend.github.entities.GithubResponseData;
 import com.dsinnovators.devprofilesbackend.github.entities.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -51,24 +49,43 @@ public class Profile {
     private List<Repository> repositories = new ArrayList<>();
 
     // extracted contributions summary
-    private Integer totalCommitContributions;
-    private Integer totalRepositoryContributions;
-    private Integer totalRepositoriesWithContributedIssues;
-    // try JSONB
-    private String weeklyContributionsJson;
+    private boolean hasAnyContributions;
+    private boolean hasAnyRestrictedContributions;
+    private int totalCommitContributions;
+    private int totalPullRequestContributions;
+    private int totalPullRequestReviewContributions;
+    private int totalIssueContributions;
+    private int totalRepositoryContributions;
+    private int totalRepositoriesWithContributedIssues;
+    private int totalRepositoriesWithContributedCommits;
+    private int totalRepositoriesWithContributedPullRequests;
+    private int totalRepositoriesWithContributedPullRequestReviews;
+    private int restrictedContributionsCount;
+    private Date contribStartedAt;
+    private Date contribEndedAt;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private WeeklyContribution weeklyContributions;
 
     @Enumerated(EnumType.STRING)
     private GitPlatform gitPlatform = GitPlatform.GITHUB;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="developer_id", nullable = true) // TODO: make nullable false
     private Developer developer;
 
+    @JsonIgnore
     @Transient
     private List<GithubRepository> pinnedRepositories = new ArrayList<>();
 
+    @JsonIgnore
     @Transient
     private List<GithubRepository> topRepositories = new ArrayList<>();
+
+    @JsonIgnore
+    @Transient
+    private Map<String, Repository> repositoryMap = new HashMap<>();
 
     public static enum GitPlatform{
         GITHUB, BITBUCKET, GITLAB
@@ -92,17 +109,60 @@ public class Profile {
                 .repositoriesContributedTo(user.getRepositoriesContributedTo().getTotalCount())
                 .gists(user.getGists().getTotalCount())
                 .issues(user.getIssues().getTotalCount())
-                .organizations(user.getOrganizationConnections().getOrganizations().stream()
-                        .map(Organization::from)
-                        .collect(Collectors.toList()))
-                // TODO: set pinned and top repositories and check total count
-                .repositories(user.getRepositories().getRepositories().stream()
-                        .map(Repository::from)
-                        .collect(Collectors.toList()))
-                .totalCommitContributions(user.getAllContributions().get("totalCommitContributions").asInt(0))
-                .totalRepositoryContributions(user.getAllContributions().get("totalRepositoryContributions").asInt(0))
-                .totalRepositoriesWithContributedIssues(user.getAllContributions().get("totalRepositoriesWithContributedIssues").asInt(0))
-                // TODO: populate weeklyContributionsJson
+                .hasAnyContributions(user.getContributionsSummary().isHasAnyContributions())
+                .hasAnyRestrictedContributions(user.getContributionsSummary().isHasAnyRestrictedContributions())
+                .totalCommitContributions(user.getContributionsSummary().getTotalCommitContributions())
+                .totalPullRequestContributions(user.getContributionsSummary().getTotalPullRequestContributions())
+                .totalPullRequestReviewContributions(user.getContributionsSummary().getTotalPullRequestReviewContributions())
+                .totalIssueContributions(user.getContributionsSummary().getTotalIssueContributions())
+                .totalRepositoryContributions(user.getContributionsSummary().getTotalRepositoryContributions())
+                .totalRepositoriesWithContributedIssues(user.getContributionsSummary().getTotalRepositoriesWithContributedIssues())
+                .totalRepositoriesWithContributedCommits(user.getContributionsSummary().getTotalRepositoriesWithContributedCommits())
+                .totalRepositoriesWithContributedPullRequests(user.getContributionsSummary().getTotalRepositoriesWithContributedPullRequests())
+                .totalRepositoriesWithContributedPullRequestReviews(user.getContributionsSummary().getTotalRepositoriesWithContributedPullRequestReviews())
+                .restrictedContributionsCount(user.getContributionsSummary().getRestrictedContributionsCount())
+                .contribStartedAt(user.getContributionsSummary().getStartedAt())
+                .contribEndedAt(user.getContributionsSummary().getEndedAt())
             .build();
+    }
+
+    @Override
+    public String toString() {
+        return "Profile{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", login='" + login + '\'' +
+                ", email='" + email + '\'' +
+                ", bio='" + bio + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", websiteUrl='" + websiteUrl + '\'' +
+                ", company='" + company + '\'' +
+                ", location='" + location + '\'' +
+                ", createdAt=" + createdAt +
+                ", followers=" + followers +
+                ", following=" + following +
+                ", starredRepositories=" + starredRepositories +
+                ", repositoriesContributedTo=" + repositoriesContributedTo +
+                ", gists=" + gists +
+                ", issues=" + issues +
+                ", organizations=" + organizations +
+                ", repositories=" + repositories +
+                ", hasAnyContributions=" + hasAnyContributions +
+                ", hasAnyRestrictedContributions=" + hasAnyRestrictedContributions +
+                ", totalCommitContributions=" + totalCommitContributions +
+                ", totalPullRequestContributions=" + totalPullRequestContributions +
+                ", totalPullRequestReviewContributions=" + totalPullRequestReviewContributions +
+                ", totalIssueContributions=" + totalIssueContributions +
+                ", totalRepositoryContributions=" + totalRepositoryContributions +
+                ", totalRepositoriesWithContributedIssues=" + totalRepositoriesWithContributedIssues +
+                ", totalRepositoriesWithContributedCommits=" + totalRepositoriesWithContributedCommits +
+                ", totalRepositoriesWithContributedPullRequests=" + totalRepositoriesWithContributedPullRequests +
+                ", totalRepositoriesWithContributedPullRequestReviews=" + totalRepositoriesWithContributedPullRequestReviews +
+                ", restrictedContributionsCount=" + restrictedContributionsCount +
+                ", contribStartedAt=" + contribStartedAt +
+                ", contribEndedAt=" + contribEndedAt +
+                ", weeklyContributions=" + weeklyContributions +
+                ", gitPlatform=" + gitPlatform +
+                '}';
     }
 }

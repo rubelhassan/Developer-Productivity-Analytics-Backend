@@ -1,6 +1,8 @@
 package com.dsinnovators.devprofilesbackend.modules.profiles.entities;
 
 import com.dsinnovators.devprofilesbackend.github.entities.GithubOrganization;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +30,7 @@ public class Organization {
     private String url;
     private String websiteUrl;
 
+    @JsonIgnore
     @ManyToOne
     private Profile profile;
 
@@ -39,5 +42,17 @@ public class Organization {
                 .url(githubOrganization.getUrl())
                 .websiteUrl(githubOrganization.getWebsiteUrl())
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "Organization{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", description='" + description + '\'' +
+                ", url='" + url + '\'' +
+                ", websiteUrl='" + websiteUrl + '\'' +
+                '}';
     }
 }
