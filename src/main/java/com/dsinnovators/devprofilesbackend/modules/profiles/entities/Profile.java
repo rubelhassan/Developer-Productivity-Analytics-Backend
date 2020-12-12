@@ -23,7 +23,7 @@ import java.util.*;
 public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "profiles_id_generator")
-    @SequenceGenerator(name="profiles_id_generator", sequenceName = "profiles_id_seq", initialValue=101)
+    @SequenceGenerator(name = "profiles_id_generator", sequenceName = "profiles_id_seq", initialValue = 101)
     private Long id;
 
     private String name;
@@ -72,7 +72,7 @@ public class Profile {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="developer_id", nullable = true) // TODO: make nullable false
+    @JoinColumn(name = "developer_id", nullable = true) // TODO: make nullable false
     private Developer developer;
 
     @JsonIgnore
@@ -87,43 +87,48 @@ public class Profile {
     @Transient
     private Map<String, Repository> repositoryMap = new HashMap<>();
 
-    public static enum GitPlatform{
+    public static enum GitPlatform {
         GITHUB, BITBUCKET, GITLAB
     }
 
     public static Profile from(GithubResponseData data) {
         User user = data.getData().getUser();
         return Profile.builder()
-                .name(user.getName())
-                .login(user.getLogin())
-                .email(user.getEmail())
-                .bio(user.getBio())
-                .avatarUrl(user.getAvatarUrl())
-                .websiteUrl(user.getWebsiteUrl())
-                .company(user.getCompany())
-                .location(user.getLocation())
-                .createdAt(user.getCreatedAt())
-                .followers(user.getFollowers().getTotalCount())
-                .following(user.getFollowing().getTotalCount())
-                .starredRepositories(user.getStarredRepositories().getTotalCount())
-                .repositoriesContributedTo(user.getRepositoriesContributedTo().getTotalCount())
-                .gists(user.getGists().getTotalCount())
-                .issues(user.getIssues().getTotalCount())
-                .hasAnyContributions(user.getContributionsSummary().isHasAnyContributions())
-                .hasAnyRestrictedContributions(user.getContributionsSummary().isHasAnyRestrictedContributions())
-                .totalCommitContributions(user.getContributionsSummary().getTotalCommitContributions())
-                .totalPullRequestContributions(user.getContributionsSummary().getTotalPullRequestContributions())
-                .totalPullRequestReviewContributions(user.getContributionsSummary().getTotalPullRequestReviewContributions())
-                .totalIssueContributions(user.getContributionsSummary().getTotalIssueContributions())
-                .totalRepositoryContributions(user.getContributionsSummary().getTotalRepositoryContributions())
-                .totalRepositoriesWithContributedIssues(user.getContributionsSummary().getTotalRepositoriesWithContributedIssues())
-                .totalRepositoriesWithContributedCommits(user.getContributionsSummary().getTotalRepositoriesWithContributedCommits())
-                .totalRepositoriesWithContributedPullRequests(user.getContributionsSummary().getTotalRepositoriesWithContributedPullRequests())
-                .totalRepositoriesWithContributedPullRequestReviews(user.getContributionsSummary().getTotalRepositoriesWithContributedPullRequestReviews())
-                .restrictedContributionsCount(user.getContributionsSummary().getRestrictedContributionsCount())
-                .contribStartedAt(user.getContributionsSummary().getStartedAt())
-                .contribEndedAt(user.getContributionsSummary().getEndedAt())
-            .build();
+                      .name(user.getName())
+                      .login(user.getLogin())
+                      .email(user.getEmail())
+                      .bio(user.getBio())
+                      .avatarUrl(user.getAvatarUrl())
+                      .websiteUrl(user.getWebsiteUrl())
+                      .company(user.getCompany())
+                      .location(user.getLocation())
+                      .createdAt(user.getCreatedAt())
+                      .followers(user.getFollowers().getTotalCount())
+                      .following(user.getFollowing().getTotalCount())
+                      .starredRepositories(user.getStarredRepositories().getTotalCount())
+                      .repositoriesContributedTo(user.getRepositoriesContributedTo().getTotalCount())
+                      .gists(user.getGists().getTotalCount())
+                      .issues(user.getIssues().getTotalCount())
+                      .hasAnyContributions(user.getContributionsSummary().isHasAnyContributions())
+                      .hasAnyRestrictedContributions(user.getContributionsSummary().isHasAnyRestrictedContributions())
+                      .totalCommitContributions(user.getContributionsSummary().getTotalCommitContributions())
+                      .totalPullRequestContributions(user.getContributionsSummary().getTotalPullRequestContributions())
+                      .totalPullRequestReviewContributions(
+                              user.getContributionsSummary().getTotalPullRequestReviewContributions())
+                      .totalIssueContributions(user.getContributionsSummary().getTotalIssueContributions())
+                      .totalRepositoryContributions(user.getContributionsSummary().getTotalRepositoryContributions())
+                      .totalRepositoriesWithContributedIssues(
+                              user.getContributionsSummary().getTotalRepositoriesWithContributedIssues())
+                      .totalRepositoriesWithContributedCommits(
+                              user.getContributionsSummary().getTotalRepositoriesWithContributedCommits())
+                      .totalRepositoriesWithContributedPullRequests(
+                              user.getContributionsSummary().getTotalRepositoriesWithContributedPullRequests())
+                      .totalRepositoriesWithContributedPullRequestReviews(
+                              user.getContributionsSummary().getTotalRepositoriesWithContributedPullRequestReviews())
+                      .restrictedContributionsCount(user.getContributionsSummary().getRestrictedContributionsCount())
+                      .contribStartedAt(user.getContributionsSummary().getStartedAt())
+                      .contribEndedAt(user.getContributionsSummary().getEndedAt())
+                      .build();
     }
 
     @Override

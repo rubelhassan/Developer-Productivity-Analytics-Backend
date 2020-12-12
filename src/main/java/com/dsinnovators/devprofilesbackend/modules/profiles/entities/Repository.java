@@ -26,7 +26,7 @@ import static java.util.Optional.ofNullable;
 public class Repository {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "repositories_id_generator")
-    @SequenceGenerator(name="repositories_id_generator", sequenceName = "repositories_id_seq", initialValue=101)
+    @SequenceGenerator(name = "repositories_id_generator", sequenceName = "repositories_id_seq", initialValue = 101)
     private Long id;
 
     private String repositoryId;
@@ -48,7 +48,7 @@ public class Repository {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="profile_id", nullable = false)
+    @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
 
     @Override
@@ -72,23 +72,25 @@ public class Repository {
         }
 
         return Repository.builder()
-                .repositoryId(githubRepository.getRepositoryId())
-                .name(githubRepository.getName())
-                .description(githubRepository.getDescription())
-                .stargazerCount(githubRepository.getStargazerCount())
-                .nameWithOwner(githubRepository.getNameWithOwner())
-                .isPrivate(githubRepository.isPrivate())
-                .isFork(githubRepository.isFork())
-                .forkCount(githubRepository.getForkCount())
-                .owner(githubRepository.getOwner().getLogin())
-                .primaryLanguage(ofNullable(githubRepository.getPrimaryLanguage()).map(Language::getName).orElse(null))
-                .topic(topic)
-                .pullRequests(githubRepository.getPullRequests().getTotalCount())
-                .issues(githubRepository.getIssues().getTotalCount())
-                .watchers(githubRepository.getWatchers().getTotalCount())
-                .isPinned(false)
-                .isTop(false)
-                .build();
+                         .repositoryId(githubRepository.getRepositoryId())
+                         .name(githubRepository.getName())
+                         .description(githubRepository.getDescription())
+                         .stargazerCount(githubRepository.getStargazerCount())
+                         .nameWithOwner(githubRepository.getNameWithOwner())
+                         .isPrivate(githubRepository.isPrivate())
+                         .isFork(githubRepository.isFork())
+                         .forkCount(githubRepository.getForkCount())
+                         .owner(githubRepository.getOwner().getLogin())
+                         .primaryLanguage(
+                                 ofNullable(githubRepository.getPrimaryLanguage())
+                                         .map(Language::getName).orElse(null))
+                         .topic(topic)
+                         .pullRequests(githubRepository.getPullRequests().getTotalCount())
+                         .issues(githubRepository.getIssues().getTotalCount())
+                         .watchers(githubRepository.getWatchers().getTotalCount())
+                         .isPinned(false)
+                         .isTop(false)
+                         .build();
     }
 
     @Override

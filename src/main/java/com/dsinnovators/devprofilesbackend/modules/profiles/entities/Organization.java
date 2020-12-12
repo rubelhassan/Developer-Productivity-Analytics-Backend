@@ -21,7 +21,7 @@ import javax.persistence.*;
 public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organizations_id_generator")
-    @SequenceGenerator(name="organizations_id_generator", sequenceName = "organizations_id_seq", initialValue=101)
+    @SequenceGenerator(name = "organizations_id_generator", sequenceName = "organizations_id_seq", initialValue = 101)
     private Long id;
 
     private String name;

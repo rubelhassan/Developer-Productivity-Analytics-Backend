@@ -23,7 +23,7 @@ import java.util.Date;
 public class WeeklyContribution {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contrib_id_generator")
-    @SequenceGenerator(name="contrib_id_generator", sequenceName = "contrib_id_seq", initialValue=101)
+    @SequenceGenerator(name = "contrib_id_generator", sequenceName = "contrib_id_seq", initialValue = 101)
     private Long id;
     private boolean hasAnyContributions;
     private boolean hasAnyRestrictedContributions;
@@ -41,7 +41,7 @@ public class WeeklyContribution {
     private Date endedAt;
 
     @JsonIgnore
-    @Column(name = "contribution_calendar_json", columnDefinition="TEXT")
+    @Column(name = "contribution_calendar_json", columnDefinition = "TEXT")
     private String contributionCalendar;
 
     @Transient
@@ -49,29 +49,35 @@ public class WeeklyContribution {
 
     @JsonIgnore
     @OneToOne
-    @JoinColumn(name="profile_id", nullable = false) // TODO: make nullable false
+    @JoinColumn(name = "profile_id", nullable = false) // TODO: make nullable false
     private Profile profile;
 
-    public static WeeklyContribution from(GithubContributionSummary contributionSummary, Profile profile) throws JsonProcessingException {
+    public static WeeklyContribution from(GithubContributionSummary contributionSummary,
+                                          Profile profile) throws JsonProcessingException {
         return WeeklyContribution.builder()
-                .hasAnyContributions(contributionSummary.isHasAnyContributions())
-                .hasAnyRestrictedContributions(contributionSummary.isHasAnyRestrictedContributions())
-                .totalCommitContributions(contributionSummary.getTotalCommitContributions())
-                .totalPullRequestContributions(contributionSummary.getTotalPullRequestContributions())
-                .totalPullRequestReviewContributions(contributionSummary.getTotalPullRequestReviewContributions())
-                .totalIssueContributions(contributionSummary.getTotalIssueContributions())
-                .totalRepositoryContributions(contributionSummary.getTotalRepositoryContributions())
-                .totalRepositoriesWithContributedIssues(contributionSummary.getTotalRepositoriesWithContributedIssues())
-                .totalRepositoriesWithContributedCommits(contributionSummary.getTotalRepositoriesWithContributedCommits())
-                .totalRepositoriesWithContributedPullRequests(contributionSummary.getTotalRepositoriesWithContributedPullRequests())
-                .totalRepositoriesWithContributedPullRequestReviews(contributionSummary.getTotalRepositoriesWithContributedPullRequestReviews())
-                .restrictedContributionsCount(contributionSummary.getRestrictedContributionsCount())
-                .startedAt(contributionSummary.getStartedAt())
-                .endedAt(contributionSummary.getEndedAt())
-                .contributionCalendar(contributionSummary.getContributionCalenderString())
-                .contributionsCalendar(contributionSummary.getContributionCalendar())
-                .profile(profile)
-                .build();
+                                 .hasAnyContributions(contributionSummary.isHasAnyContributions())
+                                 .hasAnyRestrictedContributions(contributionSummary.isHasAnyRestrictedContributions())
+                                 .totalCommitContributions(contributionSummary.getTotalCommitContributions())
+                                 .totalPullRequestContributions(contributionSummary.getTotalPullRequestContributions())
+                                 .totalPullRequestReviewContributions(
+                                         contributionSummary.getTotalPullRequestReviewContributions())
+                                 .totalIssueContributions(contributionSummary.getTotalIssueContributions())
+                                 .totalRepositoryContributions(contributionSummary.getTotalRepositoryContributions())
+                                 .totalRepositoriesWithContributedIssues(
+                                         contributionSummary.getTotalRepositoriesWithContributedIssues())
+                                 .totalRepositoriesWithContributedCommits(
+                                         contributionSummary.getTotalRepositoriesWithContributedCommits())
+                                 .totalRepositoriesWithContributedPullRequests(
+                                         contributionSummary.getTotalRepositoriesWithContributedPullRequests())
+                                 .totalRepositoriesWithContributedPullRequestReviews(
+                                         contributionSummary.getTotalRepositoriesWithContributedPullRequestReviews())
+                                 .restrictedContributionsCount(contributionSummary.getRestrictedContributionsCount())
+                                 .startedAt(contributionSummary.getStartedAt())
+                                 .endedAt(contributionSummary.getEndedAt())
+                                 .contributionCalendar(contributionSummary.getContributionCalenderString())
+                                 .contributionsCalendar(contributionSummary.getContributionCalendar())
+                                 .profile(profile)
+                                 .build();
     }
 
     @Override
