@@ -21,16 +21,16 @@ public class User {
     private String company;
     private String location;
     private Date createdAt;
-    private OrganizationConnection organizationConnections;
+    private OrganizationConnection organizationConnections = new OrganizationConnection();
     private GenericConnection followers;
     private GenericConnection following;
     private GenericConnection starredRepositories;
     private GenericConnection repositoriesContributedTo;
     private GenericConnection gists;
     private GenericConnection issues;
-    private RepositoriesWithCount pinnedItems;
-    private RepositoriesWithCount topRepositories;
-    private RepositoriesWithCount repositories;
-    private JsonNode allContributions;
-    private JsonNode weeklyContributions;
+    private RepositoriesWithCount pinnedItems = new RepositoriesWithCount();
+    private RepositoriesWithCount topRepositories = new RepositoriesWithCount();
+    private RepositoriesWithCount repositories = new RepositoriesWithCount();
+    private GithubContributionSummary contributionsSummary;
+    private GithubContributionSummary contributionsWeekly;
 }

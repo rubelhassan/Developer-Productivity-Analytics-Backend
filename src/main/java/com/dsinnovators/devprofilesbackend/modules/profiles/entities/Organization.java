@@ -1,6 +1,8 @@
 package com.dsinnovators.devprofilesbackend.modules.profiles.entities;
 
 import com.dsinnovators.devprofilesbackend.github.entities.GithubOrganization;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +21,7 @@ import javax.persistence.*;
 public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organizations_id_generator")
-    @SequenceGenerator(name="organizations_id_generator", sequenceName = "organizations_id_seq", initialValue=101)
+    @SequenceGenerator(name = "organizations_id_generator", sequenceName = "organizations_id_seq", initialValue = 101)
     private Long id;
 
     private String name;
@@ -28,6 +30,7 @@ public class Organization {
     private String url;
     private String websiteUrl;
 
+    @JsonIgnore
     @ManyToOne
     private Profile profile;
 
@@ -39,5 +42,17 @@ public class Organization {
                 .url(githubOrganization.getUrl())
                 .websiteUrl(githubOrganization.getWebsiteUrl())
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "Organization{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", description='" + description + '\'' +
+                ", url='" + url + '\'' +
+                ", websiteUrl='" + websiteUrl + '\'' +
+                '}';
     }
 }

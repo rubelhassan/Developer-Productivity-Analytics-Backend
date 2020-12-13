@@ -20,7 +20,7 @@ import java.util.List;
 public class Developer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "developers_id_generator")
-    @SequenceGenerator(name="developers_id_generator", sequenceName = "developers_id_seq", initialValue=101)
+    @SequenceGenerator(name = "developers_id_generator", sequenceName = "developers_id_seq", initialValue = 101)
     private Long id;
 
     private String email;

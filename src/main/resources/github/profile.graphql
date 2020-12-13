@@ -39,6 +39,7 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
         pinnedItems(first: 6, types: [REPOSITORY]) {
             repositories: nodes {
                 ... on Repository {
+                    repositoryId: id
                     name
                     description
                     stargazerCount
@@ -74,6 +75,7 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
         }
         topRepositories(first: 5, orderBy: {field: STARGAZERS, direction: DESC}) {
             repositories: nodes {
+                repositoryId: id
                 name
                 description
                 nameWithOwner
@@ -107,11 +109,12 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
         }
         repositories (first: 100, orderBy: {field: CREATED_AT, direction: DESC}) {
             repositories: nodes {
+                repositoryId: id
                 name
                 description
                 isPrivate
                 stargazerCount
-                isUserConfigurationRepository
+                nameWithOwner
                 forkCount
                 isFork
                 owner {
@@ -144,26 +147,37 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
                 hasNextPage
             }
         }
-        allContributions: contributionsCollection {
+        contributionsSummary: contributionsCollection {
+            hasAnyContributions
+            hasAnyRestrictedContributions
             totalCommitContributions
+            totalPullRequestContributions
+            totalPullRequestReviewContributions
+            totalIssueContributions
             totalRepositoryContributions
             totalRepositoriesWithContributedIssues
-        }
-        weeklyContributions: contributionsCollection(from: $fromDate, to: $toDate) {
-            hasAnyContributions
-            totalCommitContributions
-            totalRepositoryContributions
+            totalRepositoriesWithContributedCommits
+            totalRepositoriesWithContributedPullRequests
+            totalRepositoriesWithContributedPullRequestReviews
             restrictedContributionsCount
-            commitContributionsByRepository {
-                contributions(last: 10) {
-                    nodes {
-                        commitCount
-                        repository {
-                            name
-                        }
-                    }
-                }
-            }
+            startedAt
+            endedAt
+        }
+        contributionsWeekly: contributionsCollection(from: $fromDate, to: $toDate) {
+            hasAnyContributions
+            hasAnyRestrictedContributions
+            totalCommitContributions
+            totalPullRequestContributions
+            totalPullRequestReviewContributions
+            totalIssueContributions
+            totalRepositoryContributions
+            totalRepositoriesWithContributedIssues
+            totalRepositoriesWithContributedCommits
+            totalRepositoriesWithContributedPullRequests
+            totalRepositoriesWithContributedPullRequestReviews
+            restrictedContributionsCount
+            startedAt
+            endedAt
             contributionCalendar {
                 totalContributions
                 weeks {
