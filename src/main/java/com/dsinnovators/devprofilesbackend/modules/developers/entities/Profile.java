@@ -1,8 +1,7 @@
-package com.dsinnovators.devprofilesbackend.modules.profiles.entities;
+package com.dsinnovators.devprofilesbackend.modules.developers.entities;
 
 import com.dsinnovators.devprofilesbackend.github.entities.GithubRepository;
-import com.dsinnovators.devprofilesbackend.github.entities.GithubResponseData;
-import com.dsinnovators.devprofilesbackend.github.entities.User;
+import com.dsinnovators.devprofilesbackend.github.entities.GithubUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +11,10 @@ import org.springframework.hateoas.server.core.Relation;
 
 import javax.persistence.*;
 import java.util.*;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Data
 @NoArgsConstructor
@@ -42,10 +45,17 @@ public class Profile {
     private Integer gists;
     private Integer issues;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "profile_org",
+            joinColumns = {@JoinColumn(name = "profile_id")},
+            inverseJoinColumns = {@JoinColumn(name = "organization_id")}
+    )
+    @Builder.Default
     private List<Organization> organizations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Repository> repositories = new ArrayList<>();
 
     // extracted contributions summary
@@ -72,27 +82,41 @@ public class Profile {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "developer_id", nullable = true) // TODO: make nullable false
+    @JoinColumn(name = "developer_id", nullable = false)
     private Developer developer;
 
     @JsonIgnore
     @Transient
+    @Builder.Default
     private List<GithubRepository> pinnedRepositories = new ArrayList<>();
 
     @JsonIgnore
     @Transient
+    @Builder.Default
     private List<GithubRepository> topRepositories = new ArrayList<>();
 
     @JsonIgnore
     @Transient
-    private Map<String, Repository> repositoryMap = new HashMap<>();
+    @Builder.Default
+    private Map<String, Organization> organizationMap = new HashMap<>();
 
-    public static enum GitPlatform {
-        GITHUB, BITBUCKET, GITLAB
+    public void setWeeklyContributions(WeeklyContribution weeklyContributions) {
+        this.weeklyContributions = weeklyContributions;
+        if (weeklyContributions != null) {
+            weeklyContributions.setProfile(this);
+        }
     }
 
-    public static Profile from(GithubResponseData data) {
-        User user = data.getData().getUser();
+    @PostLoad
+    @PostPersist
+    public void loadOrganizations() {
+        if (!isEmpty(this.organizations)) {
+            this.organizationMap = this.organizations.stream()
+                                                     .collect(toMap(Organization::getGithubId, identity()));
+        }
+    }
+
+    public static Profile from(GithubUser user) {
         return Profile.builder()
                       .name(user.getName())
                       .login(user.getLogin())
@@ -128,6 +152,7 @@ public class Profile {
                       .restrictedContributionsCount(user.getContributionsSummary().getRestrictedContributionsCount())
                       .contribStartedAt(user.getContributionsSummary().getStartedAt())
                       .contribEndedAt(user.getContributionsSummary().getEndedAt())
+                      .gitPlatform(GitPlatform.GITHUB)
                       .build();
     }
 

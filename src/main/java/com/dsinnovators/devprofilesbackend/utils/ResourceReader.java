@@ -1,4 +1,4 @@
-package com.dsinnovators.devprofilesbackend.util;
+package com.dsinnovators.devprofilesbackend.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.util.ResourceUtils;

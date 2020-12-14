@@ -1,18 +1,23 @@
-package com.dsinnovators.devprofilesbackend.modules.profiles.entities;
+package com.dsinnovators.devprofilesbackend.modules.developers.entities;
 
 import com.dsinnovators.devprofilesbackend.github.entities.GithubContributionSummary;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.server.core.Relation;
 
 import javax.persistence.*;
 import java.util.Date;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
+@Slf4j
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -52,32 +57,47 @@ public class WeeklyContribution {
     @JoinColumn(name = "profile_id", nullable = false) // TODO: make nullable false
     private Profile profile;
 
+    @PostLoad
+    @PostPersist
+    public void loadContributionCalender() {
+        if(!isEmpty(contributionCalendar)) {
+            try {
+                contributionsCalendar = new ObjectMapper().readTree(contributionCalendar);
+            } catch (JsonProcessingException e) {
+                log.error("Could not parse contribution calender: " + contributionCalendar);
+            }
+        }
+    }
+
     public static WeeklyContribution from(GithubContributionSummary contributionSummary,
-                                          Profile profile) throws JsonProcessingException {
-        return WeeklyContribution.builder()
-                                 .hasAnyContributions(contributionSummary.isHasAnyContributions())
-                                 .hasAnyRestrictedContributions(contributionSummary.isHasAnyRestrictedContributions())
-                                 .totalCommitContributions(contributionSummary.getTotalCommitContributions())
-                                 .totalPullRequestContributions(contributionSummary.getTotalPullRequestContributions())
-                                 .totalPullRequestReviewContributions(
-                                         contributionSummary.getTotalPullRequestReviewContributions())
-                                 .totalIssueContributions(contributionSummary.getTotalIssueContributions())
-                                 .totalRepositoryContributions(contributionSummary.getTotalRepositoryContributions())
-                                 .totalRepositoriesWithContributedIssues(
-                                         contributionSummary.getTotalRepositoriesWithContributedIssues())
-                                 .totalRepositoriesWithContributedCommits(
-                                         contributionSummary.getTotalRepositoriesWithContributedCommits())
-                                 .totalRepositoriesWithContributedPullRequests(
-                                         contributionSummary.getTotalRepositoriesWithContributedPullRequests())
-                                 .totalRepositoriesWithContributedPullRequestReviews(
-                                         contributionSummary.getTotalRepositoriesWithContributedPullRequestReviews())
-                                 .restrictedContributionsCount(contributionSummary.getRestrictedContributionsCount())
-                                 .startedAt(contributionSummary.getStartedAt())
-                                 .endedAt(contributionSummary.getEndedAt())
-                                 .contributionCalendar(contributionSummary.getContributionCalenderString())
-                                 .contributionsCalendar(contributionSummary.getContributionCalendar())
-                                 .profile(profile)
-                                 .build();
+                                          WeeklyContribution weeklyContributions) {
+        WeeklyContributionBuilder builder =
+                WeeklyContribution.builder()
+                                  .hasAnyContributions(contributionSummary.isHasAnyContributions())
+                                  .hasAnyRestrictedContributions(contributionSummary.isHasAnyRestrictedContributions())
+                                  .totalCommitContributions(contributionSummary.getTotalCommitContributions())
+                                  .totalPullRequestContributions(contributionSummary.getTotalPullRequestContributions())
+                                  .totalPullRequestReviewContributions(
+                                          contributionSummary.getTotalPullRequestReviewContributions())
+                                  .totalIssueContributions(contributionSummary.getTotalIssueContributions())
+                                  .totalRepositoryContributions(contributionSummary.getTotalRepositoryContributions())
+                                  .totalRepositoriesWithContributedIssues(
+                                          contributionSummary.getTotalRepositoriesWithContributedIssues())
+                                  .totalRepositoriesWithContributedCommits(
+                                          contributionSummary.getTotalRepositoriesWithContributedCommits())
+                                  .totalRepositoriesWithContributedPullRequests(
+                                          contributionSummary.getTotalRepositoriesWithContributedPullRequests())
+                                  .totalRepositoriesWithContributedPullRequestReviews(
+                                          contributionSummary.getTotalRepositoriesWithContributedPullRequestReviews())
+                                  .restrictedContributionsCount(contributionSummary.getRestrictedContributionsCount())
+                                  .startedAt(contributionSummary.getStartedAt())
+                                  .endedAt(contributionSummary.getEndedAt())
+                                  .contributionCalendar(contributionSummary.getContributionCalenderString())
+                                  .contributionsCalendar(contributionSummary.getContributionCalendar());
+        if (weeklyContributions != null) {
+            builder.id(weeklyContributions.getId());
+        }
+        return builder.build();
     }
 
     @Override

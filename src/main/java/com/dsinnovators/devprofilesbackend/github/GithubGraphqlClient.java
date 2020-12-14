@@ -2,11 +2,14 @@ package com.dsinnovators.devprofilesbackend.github;
 
 import com.dsinnovators.devprofilesbackend.configurations.AppProperties;
 import com.dsinnovators.devprofilesbackend.github.entities.GithubResponseData;
+import com.dsinnovators.devprofilesbackend.github.entities.GithubUser;
 import com.dsinnovators.devprofilesbackend.github.querymodels.DateRange;
 import com.dsinnovators.devprofilesbackend.github.querymodels.GraphqlQuery;
+import com.dsinnovators.devprofilesbackend.utils.GithubUserNotFound;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GithubGraphqlClient {
@@ -27,19 +31,34 @@ public class GithubGraphqlClient {
 
     private final AppProperties appProperties;
 
-    public GithubResponseData fetchUserProfileWithContributions(String token) throws JsonProcessingException {
+    public GithubUser fetchUserProfileWithContributions(String token) throws GithubUserNotFound {
         Map<String, String> params = clientParams();
-        ObjectMapper mapper = new ObjectMapper();
-        GraphqlQuery query = GraphqlQuery.builder()
-                .query(appProperties.getGithub_gpl_profile_query())
-                .variables(dateRangeOfThisWeekToJsonString())
-                .build();
-        HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(query), attachHeaders(token));
-        return new ObjectMapper().readValue(
-                this.restTemplate
-                    .exchange(graphApiUrl, HttpMethod.POST, request, String.class, params)
-                    .getBody(),
-                GithubResponseData.class);
+        HttpEntity<String> request = buildRequestEntity(token);
+        String result = this.restTemplate
+                .exchange(graphApiUrl, HttpMethod.POST, request, String.class, params)
+                .getBody();
+        GithubResponseData responseData = null;
+        try {
+            responseData = new ObjectMapper().readValue(result, GithubResponseData.class);
+        } catch (JsonProcessingException e) {
+            log.error("Github response parsing error: ", e);
+            throw new GithubUserNotFound("Github user could not be parsed");
+        }
+        // TODO: fetch if user has more repositories
+        return responseData.getData().getUser();
+    }
+
+    private HttpEntity<String> buildRequestEntity(String token) {
+        try {
+            GraphqlQuery query = GraphqlQuery.builder()
+                                .query(appProperties.getGithub_gpl_profile_query())
+                                .variables(dateRangeOfThisWeekToJsonString())
+                                .build();
+            return new HttpEntity<>(new ObjectMapper().writeValueAsString(query), attachHeaders(token));
+        } catch (JsonProcessingException e) {
+            log.error("Failed to build Github request entity: ", e);
+        }
+        return null;
     }
 
     private String dateRangeOfThisWeekToJsonString() throws JsonProcessingException {
