@@ -14,6 +14,7 @@ import java.util.List;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RepositoriesWithCount {
+    @Builder.Default
     private List<GithubRepository> repositories = new ArrayList<>();
     private Integer totalCount;
 }

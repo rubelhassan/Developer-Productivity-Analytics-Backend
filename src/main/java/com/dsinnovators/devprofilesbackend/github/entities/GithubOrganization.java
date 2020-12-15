@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 @ToString
 public class GithubOrganization {
+    private String githubId;
     private String name;
     private String email;
     private String description;

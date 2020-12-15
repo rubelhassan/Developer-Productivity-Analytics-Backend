@@ -22,7 +22,7 @@ public class AppProperties {
     private String dsiClientSecret;
 
     @Value(
-       "#{T(com.dsinnovators.devprofilesbackend.util.ResourceReader).readAsString('classpath:github/profile.graphql')}"
+       "#{T(com.dsinnovators.devprofilesbackend.utils.ResourceReader).readAsString('classpath:github/profile.graphql')}"
     )
     private String github_gpl_profile_query;
 }

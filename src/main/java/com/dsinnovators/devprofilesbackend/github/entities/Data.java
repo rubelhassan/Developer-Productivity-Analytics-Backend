@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 @ToString
 public class Data {
-    private User user;
+    private GithubUser user;
     private RateLimit rateLimit;
 }

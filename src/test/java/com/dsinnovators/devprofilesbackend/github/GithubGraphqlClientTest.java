@@ -1,7 +1,8 @@
 package com.dsinnovators.devprofilesbackend.github;
 
 import com.dsinnovators.devprofilesbackend.configurations.AppProperties;
-import com.dsinnovators.devprofilesbackend.github.entities.GithubResponseData;
+import com.dsinnovators.devprofilesbackend.github.entities.GithubUser;
+import com.dsinnovators.devprofilesbackend.utils.GithubUserNotFound;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
-import static com.dsinnovators.devprofilesbackend.util.ResourceReader.readAsString;
+import static com.dsinnovators.devprofilesbackend.utils.ResourceReader.readAsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -55,7 +56,7 @@ class GithubGraphqlClientTest {
     }
 
     @Test
-    void fetchUserProfileWithContributions() throws IOException {
+    void fetchUserProfileWithContributions() throws GithubUserNotFound {
         ResponseEntity<String> apiResponse = (ResponseEntity<String>) mock(ResponseEntity.class);
         when(apiResponse.getBody()).thenReturn(githubSampleResponse);
         when(appProperties.getGithub_gpl_profile_query()).thenReturn(githubSampleQuery);
@@ -63,12 +64,10 @@ class GithubGraphqlClientTest {
                     eq(String.class), ArgumentMatchers.<String, String>anyMap()))
                 .thenReturn(apiResponse);
 
-        GithubResponseData responseData = githubGraphqlClient.fetchUserProfileWithContributions("mockToken");
+        GithubUser responseData = githubGraphqlClient.fetchUserProfileWithContributions("mockToken");
 
-        assertThat(responseData.getData(), is(notNullValue()));
-        assertThat(responseData.getData().getUser(), is(notNullValue()));
-        assertThat(responseData.getData().getRateLimit(), is(notNullValue()));
-        assertThat(responseData.getData().getUser().getLogin(), is("gaearon"));
-        assertThat(responseData.getData().getUser().getOrganizationConnections().getOrganizations().size(), is(7));
+        assertThat(responseData, is(notNullValue()));
+        assertThat(responseData.getLogin(), is("gaearon"));
+        assertThat(responseData.getOrganizationConnections().getOrganizations().size(), is(7));
     }
 }

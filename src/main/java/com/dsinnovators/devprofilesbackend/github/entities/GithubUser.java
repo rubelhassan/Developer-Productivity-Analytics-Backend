@@ -1,6 +1,5 @@
 package com.dsinnovators.devprofilesbackend.github.entities;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
 
 import java.util.Date;
@@ -11,7 +10,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @ToString
-public class User {
+public class GithubUser {
     private String name;
     private String login;
     private String email;

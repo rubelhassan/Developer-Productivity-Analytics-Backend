@@ -11,6 +11,7 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
         createdAt
         organizationConnections: organizations(first: 100) {
              organizations: nodes {
+                githubId: id
                 name
                 email
                 description

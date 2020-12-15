@@ -1,4 +1,4 @@
-package com.dsinnovators.devprofilesbackend.modules.profiles.entities;
+package com.dsinnovators.devprofilesbackend.modules.developers.entities;
 
 import com.dsinnovators.devprofilesbackend.github.entities.GithubRepository;
 import com.dsinnovators.devprofilesbackend.github.entities.Language;

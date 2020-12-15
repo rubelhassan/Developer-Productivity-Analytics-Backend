@@ -12,5 +12,6 @@ import java.util.List;
 @Builder
 @ToString
 public class RepositoryTopicConnection {
+    @Builder.Default
     List<RepositoryTopic> nodes = new ArrayList<>();
 }
