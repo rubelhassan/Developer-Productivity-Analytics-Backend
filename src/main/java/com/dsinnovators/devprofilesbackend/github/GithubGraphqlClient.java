@@ -28,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GithubGraphqlClient {
     private static final String graphApiUrl = "https://api.github.com/graphql";
+    private static final String tokenAccessUrl = "https://github.com/login/oauth/access_token";
 
     private final RestTemplate restTemplate;
 
@@ -106,7 +107,23 @@ public class GithubGraphqlClient {
     private HttpHeaders attachHeaders(String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", "application/json");
-        headers.set("Authorization", "Bearer " + token);
+        if (!StringUtils.isEmpty(token)) {
+            headers.set("Authorization", "Bearer " + token);
+        }
         return headers;
+    }
+
+    public String getAccessTokenFromGithub(String code) {
+        HttpHeaders headers = attachHeaders(null);
+        Map<String, String> params = clientParams();
+        params.put("code", code);
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
+        String response = this.restTemplate.postForObject(tokenAccessUrl, request, String.class);
+        try {
+            return new ObjectMapper().readTree(response).get("access_token").asText();
+        } catch (JsonProcessingException e) {
+            // TODO: refactor while handling errors globally
+            throw new RuntimeException("Error parsing response while requesting token from Github");
+        }
     }
 }
