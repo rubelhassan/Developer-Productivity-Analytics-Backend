@@ -25,4 +25,9 @@ public class AppProperties {
        "#{T(com.dsinnovators.devprofilesbackend.utils.ResourceReader).readAsString('classpath:github/profile.graphql')}"
     )
     private String github_gpl_profile_query;
+
+    @Value(
+            "#{T(com.dsinnovators.devprofilesbackend.utils.ResourceReader).readAsString('classpath:github/public_profile.graphql')}"
+    )
+    private String github_gpl_public_profile_query;
 }

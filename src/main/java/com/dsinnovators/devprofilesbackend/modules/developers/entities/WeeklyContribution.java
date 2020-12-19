@@ -49,13 +49,13 @@ public class WeeklyContribution {
     @Column(name = "contribution_calendar_json", columnDefinition = "TEXT")
     private String contributionCalendar;
 
-    @Transient
-    private JsonNode contributionsCalendar;
-
     @JsonIgnore
     @OneToOne
-    @JoinColumn(name = "profile_id", nullable = false) // TODO: make nullable false
+    @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
+
+    @Transient
+    private JsonNode contributionsCalendar;
 
     @PostLoad
     @PostPersist

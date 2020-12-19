@@ -27,6 +27,7 @@ public class Organization {
     private Long id;
 
     private String githubId;
+    private String login;
     private String name;
     private String email;
     private String description;
@@ -41,6 +42,7 @@ public class Organization {
     public static Organization from(GithubOrganization githubOrganization) {
         return Organization.builder()
                 .githubId(githubOrganization.getGithubId())
+                .login(githubOrganization.getLogin())
                 .name(githubOrganization.getName())
                 .email(githubOrganization.getEmail())
                 .description(githubOrganization.getDescription())

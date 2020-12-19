@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 public class GithubOrganization {
     private String githubId;
+    private String login;
     private String name;
     private String email;
     private String description;

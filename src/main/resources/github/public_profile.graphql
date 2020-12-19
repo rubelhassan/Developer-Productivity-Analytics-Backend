@@ -1,5 +1,5 @@
-query ($fromDate: DateTime!, $toDate: DateTime!) {
-    user: viewer {
+query ($userName: String!, $fromDate: DateTime!, $toDate: DateTime!) {
+    user: user(login: $userName) {
         name
         login
         email
