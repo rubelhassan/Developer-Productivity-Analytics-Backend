@@ -33,8 +33,8 @@ public class DeveloperService {
                 () -> new DeveloperNotFoundException(developerId));
         Profile existingProfile = developer.githubProfile();
         // TODO: fetch from github server should be moved to a scheduled job
-        developer.addProfile(fetchGithubUserProfile(existingProfile, developer.getGithubAccessToken()));
         developer.getProfiles().remove(existingProfile);
+        developer.addProfile(fetchGithubUserProfile(existingProfile, developer.getGithubAccessToken()));
         developerRepository.save(developer);
         return developer;
     }
@@ -70,7 +70,16 @@ public class DeveloperService {
                                   (repository -> repository.setTop(true)));
         addPropertyToRepositories(profile, repositoryMap, user.getPinnedItems().getRepositories(),
                                   (repository -> repository.setPinned(true)));
-        profile.setRepositories(new ArrayList<>(repositoryMap.values()));
+        ArrayList<Repository> repos = new ArrayList<>(repositoryMap.values());
+        repos.forEach(repository -> {
+            if (profile.getLogin().equals(repository.getOwner())) {
+                profile.setTotalStars(profile.getTotalStars() + repository.getStargazerCount());
+                profile.setTotalRepositories(profile.getTotalRepositories() + 1);
+            } else {
+                profile.setTotalRepositoriesContributedTo(profile.getRepositoriesContributedTo() + 1);
+            }
+        });
+        profile.setRepositories(repos);
     }
 
     private void addPropertyToRepositories(Profile profile, Map<String, Repository> repositoryMap,

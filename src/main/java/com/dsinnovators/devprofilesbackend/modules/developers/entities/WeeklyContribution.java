@@ -52,11 +52,6 @@ public class WeeklyContribution {
     @Transient
     private JsonNode contributionsCalendar;
 
-    @JsonIgnore
-    @OneToOne
-    @JoinColumn(name = "profile_id", nullable = false) // TODO: make nullable false
-    private Profile profile;
-
     @PostLoad
     @PostPersist
     public void loadContributionCalender() {

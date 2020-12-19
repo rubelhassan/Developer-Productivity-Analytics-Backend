@@ -45,6 +45,15 @@ public class Profile {
     private Integer gists;
     private Integer issues;
 
+    @Builder.Default
+    private Integer totalRepositories = 0;
+
+    @Builder.Default
+    private Integer totalStars = 0;
+
+    @Builder.Default
+    private Integer totalRepositoriesContributedTo = 0;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "profile_org",
@@ -74,7 +83,7 @@ public class Profile {
     private Date contribStartedAt;
     private Date contribEndedAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private WeeklyContribution weeklyContributions;
 
     @Enumerated(EnumType.STRING)
@@ -102,9 +111,6 @@ public class Profile {
 
     public void setWeeklyContributions(WeeklyContribution weeklyContributions) {
         this.weeklyContributions = weeklyContributions;
-        if (weeklyContributions != null) {
-            weeklyContributions.setProfile(this);
-        }
     }
 
     @PostLoad

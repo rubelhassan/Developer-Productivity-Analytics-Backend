@@ -12,6 +12,7 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
         organizationConnections: organizations(first: 100) {
              organizations: nodes {
                 githubId: id
+                login
                 name
                 email
                 description
