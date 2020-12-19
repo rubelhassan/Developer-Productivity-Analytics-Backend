@@ -26,7 +26,6 @@ import static java.util.stream.Collectors.toMap;
 public class DeveloperService {
     private GithubGraphqlClient githubGraphqlClient;
     private DeveloperRepository developerRepository;
-    private ProfileRepository profileRepository;
 
     public Developer getProfile(Long developerId) throws DeveloperNotFoundException, GithubUserNotFound {
         Developer developer = developerRepository.findById(developerId).orElseThrow(

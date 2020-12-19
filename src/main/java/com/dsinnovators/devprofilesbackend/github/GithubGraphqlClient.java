@@ -4,12 +4,14 @@ import com.dsinnovators.devprofilesbackend.configurations.AppProperties;
 import com.dsinnovators.devprofilesbackend.github.entities.GithubResponseData;
 import com.dsinnovators.devprofilesbackend.github.entities.GithubUser;
 import com.dsinnovators.devprofilesbackend.github.querymodels.DateRange;
+import com.dsinnovators.devprofilesbackend.github.querymodels.DateRangeWithUserName;
 import com.dsinnovators.devprofilesbackend.github.querymodels.GraphqlQuery;
 import com.dsinnovators.devprofilesbackend.utils.GithubUserNotFound;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,8 +34,15 @@ public class GithubGraphqlClient {
     private final AppProperties appProperties;
 
     public GithubUser fetchUserProfileWithContributions(String token) throws GithubUserNotFound {
+        return fetchUserProfile(token, null);
+    }
+
+    private GithubUser fetchUserProfile(String token, String userName) throws GithubUserNotFound {
         Map<String, String> params = clientParams();
         HttpEntity<String> request = buildRequestEntity(token);
+        if (!StringUtils.isEmpty(userName)) {
+            request = buildRequestEntityForPublicProfile(token, userName);
+        }
         String result = this.restTemplate
                 .exchange(graphApiUrl, HttpMethod.POST, request, String.class, params)
                 .getBody();
@@ -48,11 +57,16 @@ public class GithubGraphqlClient {
         return responseData.getData().getUser();
     }
 
+    public GithubUser fetchUserPublicProfile(String token, String userName) throws GithubUserNotFound {
+        token = "<insert application token here>";
+        return fetchUserProfile(token, userName);
+    }
+
     private HttpEntity<String> buildRequestEntity(String token) {
         try {
             GraphqlQuery query = GraphqlQuery.builder()
                                 .query(appProperties.getGithub_gpl_profile_query())
-                                .variables(dateRangeOfThisWeekToJsonString())
+                                .variables(new ObjectMapper().writeValueAsString(getDateRangeOfLastSevenDays()))
                                 .build();
             return new HttpEntity<>(new ObjectMapper().writeValueAsString(query), attachHeaders(token));
         } catch (JsonProcessingException e) {
@@ -61,13 +75,25 @@ public class GithubGraphqlClient {
         return null;
     }
 
-    private String dateRangeOfThisWeekToJsonString() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        DateRange range = DateRange.builder()
+    private HttpEntity<String> buildRequestEntityForPublicProfile(String token, String userName) {
+        try {
+            GraphqlQuery query = GraphqlQuery.builder()
+                                             .query(appProperties.getGithub_gpl_public_profile_query())
+                                             .variables(new ObjectMapper().writeValueAsString(
+                                                     new DateRangeWithUserName(userName, getDateRangeOfLastSevenDays())))
+                                             .build();
+            return new HttpEntity<>(new ObjectMapper().writeValueAsString(query), attachHeaders(token));
+        } catch (JsonProcessingException e) {
+            log.error("Failed to build Github request entity: ", e);
+        }
+        return null;
+    }
+
+    private DateRange getDateRangeOfLastSevenDays() {
+        return DateRange.builder()
                 .fromDate(LocalDateTime.now().minusDays(6).format(DateTimeFormatter.ISO_DATE_TIME))
                 .toDate(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
                 .build();
-        return mapper.writeValueAsString(range);
     }
 
     private Map<String, String> clientParams() {

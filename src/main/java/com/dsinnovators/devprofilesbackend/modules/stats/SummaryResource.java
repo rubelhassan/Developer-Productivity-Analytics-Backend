@@ -1,5 +1,6 @@
 package com.dsinnovators.devprofilesbackend.modules.stats;
 
+import com.dsinnovators.devprofilesbackend.modules.stats.entities.DevelopersSummary;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;

@@ -83,7 +83,7 @@ public class Profile {
     private Date contribStartedAt;
     private Date contribEndedAt;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.MERGE)
     private WeeklyContribution weeklyContributions;
 
     @Enumerated(EnumType.STRING)
@@ -111,6 +111,9 @@ public class Profile {
 
     public void setWeeklyContributions(WeeklyContribution weeklyContributions) {
         this.weeklyContributions = weeklyContributions;
+        if (weeklyContributions != null) {
+            weeklyContributions.setProfile(this);
+        }
     }
 
     @PostLoad

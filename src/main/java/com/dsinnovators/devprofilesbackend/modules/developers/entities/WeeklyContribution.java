@@ -49,6 +49,11 @@ public class WeeklyContribution {
     @Column(name = "contribution_calendar_json", columnDefinition = "TEXT")
     private String contributionCalendar;
 
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "profile_id", nullable = false)
+    private Profile profile;
+
     @Transient
     private JsonNode contributionsCalendar;
 
