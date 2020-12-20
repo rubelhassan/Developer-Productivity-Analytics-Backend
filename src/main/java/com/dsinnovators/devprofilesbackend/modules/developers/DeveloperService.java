@@ -110,4 +110,15 @@ public class DeveloperService {
                     .collect(Collectors.toList());
         profile.setOrganizations(organizations);
     }
+
+    public Developer createProfile(Developer developer) {
+        return developerRepository.save(developer);
+    }
+
+    public Developer updateToken(Long id, String code) throws DeveloperNotFoundException {
+        Developer developer = developerRepository.findById(id)
+                                                 .orElseThrow(() -> new DeveloperNotFoundException(id));
+        developer.setGithubAccessToken(githubGraphqlClient.getAccessTokenFromGithub(code));
+        return developerRepository.save(developer);
+    }
 }
