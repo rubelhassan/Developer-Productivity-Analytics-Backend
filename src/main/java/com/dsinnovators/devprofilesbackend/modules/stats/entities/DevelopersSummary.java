@@ -11,6 +11,7 @@ import java.util.*;
 @Builder
 @ToString
 public class DevelopersSummary {
+    private long totalDevelopers;
     private long totalCommitContributions;
     private long totalPullRequestContributions;
     private long totalPullRequestReviewContributions;
@@ -21,12 +22,14 @@ public class DevelopersSummary {
     private long totalRepositoriesWithContributedPullRequests;
     private long totalRepositoriesWithContributedPullRequestReviews;
 
-    public DevelopersSummary(long totalCommitContributions, long totalPullRequestContributions,
+    public DevelopersSummary(long totalDevelopers,
+                             long totalCommitContributions, long totalPullRequestContributions,
                              long totalPullRequestReviewContributions, long totalIssueContributions,
                              long totalRepositoryContributions, long totalRepositoriesWithContributedIssues,
                              long totalRepositoriesWithContributedCommits,
                              long totalRepositoriesWithContributedPullRequests,
                              long totalRepositoriesWithContributedPullRequestReviews) {
+        this.totalDevelopers = totalDevelopers;
         this.totalCommitContributions = totalCommitContributions;
         this.totalPullRequestContributions = totalPullRequestContributions;
         this.totalPullRequestReviewContributions = totalPullRequestReviewContributions;
@@ -39,6 +42,7 @@ public class DevelopersSummary {
     }
 
     private int totalOrganizationsContributedTo;
+    private int totalRepositories;
 
     // all in last 7 days
     @Builder.Default
@@ -46,6 +50,9 @@ public class DevelopersSummary {
 
     @Builder.Default
     List<CountOfEntity> topLanguagesByRepositoriesCount = new ArrayList<>();
+
+    @Builder.Default
+    List<CountOfEntity> topTopicByRepositoriesCount = new ArrayList<>();
 
     @Builder.Default
     List<ProfileRank> topProfilesByRepositories = new ArrayList<>();

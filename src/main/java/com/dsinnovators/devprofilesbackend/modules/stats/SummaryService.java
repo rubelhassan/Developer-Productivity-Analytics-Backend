@@ -42,7 +42,12 @@ public class SummaryService {
         Map<String, Organization> organizationMap = getOrganizationsByLogin();
         Map<Organization, Set<String>> organizationRepositoryMap = new HashMap<>();
         Map<String, Set<String>> languageRepositoryMap = new HashMap<>();
+        Map<String, Set<String>> topicRepositoryMap = new HashMap<>();
+        Set<String> uniqueRepositories = new HashSet<>();
         repositories.forEach((repository)-> {
+            if (!repository.isFork()) {
+                uniqueRepositories.add(repository.getRepositoryId());
+            }
             if (organizationMap.containsKey(repository.getOwner())) {
                 organizationRepositoryMap
                         .computeIfAbsent(organizationMap.get(repository.getOwner()), k -> new HashSet<>())
@@ -53,7 +58,13 @@ public class SummaryService {
                         .computeIfAbsent(repository.getPrimaryLanguage(), k -> new HashSet<>())
                         .add(repository.getName());
             }
+            if (repository.getTopic() != null) {
+                topicRepositoryMap
+                        .computeIfAbsent(repository.getTopic(), k -> new HashSet<>())
+                        .add(repository.getName());
+            }
         });
+        developersSummary.setTotalRepositories(uniqueRepositories.size());
         developersSummary.setTotalOrganizationsContributedTo(organizationMap.size());
         developersSummary.setTopOrganizationsByRepositoriesCount(findTopNEntity(
                 organizationRepositoryMap.entrySet()
@@ -63,6 +74,11 @@ public class SummaryService {
                                          ), 5, comparingInt(CountOfEntity::getCount).reversed()));
         developersSummary.setTopLanguagesByRepositoriesCount(findTopNEntity(
                 languageRepositoryMap.entrySet().stream()
+                                     .map(entry -> new CountOfEntity(
+                                             entry.getKey(), entry.getValue().size())
+                                     ), 20, comparingInt(CountOfEntity::getCount).reversed()));
+        developersSummary.setTopTopicByRepositoriesCount(findTopNEntity(
+                topicRepositoryMap.entrySet().stream()
                                      .map(entry -> new CountOfEntity(
                                              entry.getKey(), entry.getValue().size())
                                      ), 20, comparingInt(CountOfEntity::getCount).reversed()));

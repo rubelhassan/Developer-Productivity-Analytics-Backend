@@ -11,6 +11,7 @@ import java.util.List;
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("SELECT new com.dsinnovators.devprofilesbackend.modules.stats.entities.DevelopersSummary( " +
+            "       COUNT(DISTINCT d.id), " +
             "       SUM(p.totalCommitContributions), " +
             "       SUM(p.totalPullRequestContributions), " +
             "       SUM(p.totalPullRequestReviewContributions), " +
