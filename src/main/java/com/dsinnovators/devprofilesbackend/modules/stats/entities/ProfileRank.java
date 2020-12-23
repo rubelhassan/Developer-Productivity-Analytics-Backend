@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 public class ProfileRank {
     private String githubLogin;
+    private String name;
     private int totalStars;
     private int totalRepositories;
     private int totalCommitContributionsWeekly;
