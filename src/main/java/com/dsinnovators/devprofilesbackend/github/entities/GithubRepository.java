@@ -14,6 +14,7 @@ public class GithubRepository {
     private String repositoryId;
     private String name;
     private String description;
+    private String url;
     private Integer stargazerCount;
     private String nameWithOwner;
 

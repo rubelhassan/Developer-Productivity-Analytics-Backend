@@ -85,6 +85,7 @@ query ($userName: String!, $fromDate: DateTime!, $toDate: DateTime!) {
                 isPrivate
                 forkCount
                 isFork
+                url
                 owner {
                     login
                 }

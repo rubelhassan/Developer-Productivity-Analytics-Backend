@@ -119,6 +119,7 @@ query ($fromDate: DateTime!, $toDate: DateTime!) {
                 nameWithOwner
                 forkCount
                 isFork
+                url
                 owner {
                     login
                 }

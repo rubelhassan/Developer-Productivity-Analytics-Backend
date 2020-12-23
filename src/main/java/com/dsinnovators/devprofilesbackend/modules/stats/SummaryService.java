@@ -8,6 +8,7 @@ import com.dsinnovators.devprofilesbackend.modules.developers.entities.Repositor
 import com.dsinnovators.devprofilesbackend.modules.stats.entities.CountOfEntity;
 import com.dsinnovators.devprofilesbackend.modules.stats.entities.DevelopersSummary;
 import com.dsinnovators.devprofilesbackend.modules.stats.entities.ProfileRank;
+import com.dsinnovators.devprofilesbackend.modules.stats.entities.RepositoryLite;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,10 +44,17 @@ public class SummaryService {
         Map<Organization, Set<String>> organizationRepositoryMap = new HashMap<>();
         Map<String, Set<String>> languageRepositoryMap = new HashMap<>();
         Map<String, Set<String>> topicRepositoryMap = new HashMap<>();
-        Set<String> uniqueRepositories = new HashSet<>();
+        Set<RepositoryLite> repositoriesWithStars = new TreeSet<>(comparingInt(RepositoryLite::getStars).reversed());
         repositories.forEach((repository)-> {
             if (!repository.isFork()) {
-                uniqueRepositories.add(repository.getRepositoryId());
+                repositoriesWithStars.add(
+                        RepositoryLite.builder()
+                                      .githubId(repository.getRepositoryId())
+                                      .name(repository.getName())
+                                      .url(repository.getUrl())
+                                      .stars(repository.getStargazerCount())
+                                      .forks(repository.getForkCount()).build()
+                );
             }
             if (organizationMap.containsKey(repository.getOwner())) {
                 organizationRepositoryMap
@@ -64,7 +72,10 @@ public class SummaryService {
                         .add(repository.getName());
             }
         });
-        developersSummary.setTotalRepositories(uniqueRepositories.size());
+        developersSummary.setTotalRepositories(repositoriesWithStars.size());
+        developersSummary.setTopRepositoriesByStars(repositoriesWithStars.stream().limit(5).collect(toList()));
+        developersSummary.setTotalStarsOfRepositories(
+                repositoriesWithStars.stream().mapToInt(RepositoryLite::getStars).sum());
         developersSummary.setTotalOrganizationsContributedTo(organizationMap.size());
         developersSummary.setTopOrganizationsByRepositoriesCount(findTopNEntity(
                 organizationRepositoryMap.entrySet()
@@ -77,7 +88,7 @@ public class SummaryService {
                                      .map(entry -> new CountOfEntity(
                                              entry.getKey(), entry.getValue().size())
                                      ), 20, comparingInt(CountOfEntity::getCount).reversed()));
-        developersSummary.setTopTopicByRepositoriesCount(findTopNEntity(
+        developersSummary.setTopTopicsByRepositoryCount(findTopNEntity(
                 topicRepositoryMap.entrySet().stream()
                                      .map(entry -> new CountOfEntity(
                                              entry.getKey(), entry.getValue().size())
