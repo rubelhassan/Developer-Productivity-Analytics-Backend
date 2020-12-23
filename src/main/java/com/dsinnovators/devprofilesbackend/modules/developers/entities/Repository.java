@@ -32,6 +32,7 @@ public class Repository {
     private String repositoryId;
     private String name;
     private String description;
+    private String url;
     private Integer stargazerCount;
     private String nameWithOwner;
     private boolean isPrivate;
@@ -75,6 +76,7 @@ public class Repository {
                          .repositoryId(githubRepository.getRepositoryId())
                          .name(githubRepository.getName())
                          .description(githubRepository.getDescription())
+                         .url(githubRepository.getUrl())
                          .stargazerCount(githubRepository.getStargazerCount())
                          .nameWithOwner(githubRepository.getNameWithOwner())
                          .isPrivate(githubRepository.isPrivate())

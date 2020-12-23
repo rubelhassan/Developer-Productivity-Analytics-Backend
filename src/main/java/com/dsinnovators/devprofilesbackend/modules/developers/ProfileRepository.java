@@ -27,6 +27,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("SELECT new com.dsinnovators.devprofilesbackend.modules.stats.entities.ProfileRank( " +
             "    p.login, " +
+            "    p.name, " +
             "    p.totalStars," +
             "    p.totalRepositories," +
             "    wc.totalCommitContributions," +

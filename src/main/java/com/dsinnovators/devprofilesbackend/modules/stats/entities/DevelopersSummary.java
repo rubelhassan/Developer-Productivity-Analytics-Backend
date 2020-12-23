@@ -43,6 +43,7 @@ public class DevelopersSummary {
 
     private int totalOrganizationsContributedTo;
     private int totalRepositories;
+    private int totalStarsOfRepositories;
 
     // all in last 7 days
     @Builder.Default
@@ -52,7 +53,7 @@ public class DevelopersSummary {
     List<CountOfEntity> topLanguagesByRepositoriesCount = new ArrayList<>();
 
     @Builder.Default
-    List<CountOfEntity> topTopicByRepositoriesCount = new ArrayList<>();
+    List<CountOfEntity> topTopicsByRepositoryCount = new ArrayList<>();
 
     @Builder.Default
     List<ProfileRank> topProfilesByRepositories = new ArrayList<>();
@@ -71,4 +72,7 @@ public class DevelopersSummary {
 
     @Builder.Default
     List<ProfileRank> topProfilesByRepositoryCreation = new ArrayList<>();
+
+    @Builder.Default
+    List<RepositoryLite> topRepositoriesByStars = new ArrayList<>();
 }
