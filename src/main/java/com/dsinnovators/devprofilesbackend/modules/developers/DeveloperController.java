@@ -33,7 +33,7 @@ public class DeveloperController {
 
     @PostMapping("/{id}/github/code")
     ResponseEntity<DeveloperResource> updateGithubToken(@PathVariable("id") Long id,
-                                                        @RequestBody @Valid GithubCode code) throws DeveloperNotFoundException {
+                                                        @RequestBody @Valid GithubCode code) throws DeveloperNotFoundException, GithubUserNotFound {
         return ok(new DeveloperResource(developerService.updateToken(id, code.getCode())));
     }
 }
