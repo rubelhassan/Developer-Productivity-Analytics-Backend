@@ -115,10 +115,13 @@ public class DeveloperService {
         return developerRepository.save(developer);
     }
 
-    public Developer updateToken(Long id, String code) throws DeveloperNotFoundException {
+    public Developer updateToken(Long id, String code) throws DeveloperNotFoundException, GithubUserNotFound {
         Developer developer = developerRepository.findById(id)
                                                  .orElseThrow(() -> new DeveloperNotFoundException(id));
         developer.setGithubAccessToken(githubGraphqlClient.getAccessTokenFromGithub(code));
+        Profile existingProfile = developer.githubProfile();
+        developer.getProfiles().remove(existingProfile);
+        developer.addProfile(fetchGithubUserProfile(existingProfile, developer.getGithubAccessToken()));
         return developerRepository.save(developer);
     }
 }
